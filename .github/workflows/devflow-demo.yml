@@ -1,0 +1,35 @@
+name: DevFlow Demo CI
+
+on:
+  push:
+    paths:
+      - "demo/**"
+      - ".github/workflows/devflow-demo.yml"
+  pull_request:
+    paths:
+      - "demo/**"
+      - ".github/workflows/devflow-demo.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Check addition
+        run: |
+          python - <<'PY'
+          from demo.calculator import add
+
+          for a, b, expected in [(2, 3, 5), (-2, 3, 1), (0, 0, 0)]:
+              actual = add(a, b)
+              print(f"add({a}, {b}) = {actual}; expected {expected}")
+              assert actual == expected, f"add({a}, {b}): expected {expected}, got {actual}"
+          print("All DevFlow demo checks passed.")
+          PY
